@@ -7,16 +7,16 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @all_ratings = Movie.all_ratings
-    @selected_ratings = params[:ratings]
+    @all_ratings =  ['G', 'PG', 'PG-13', 'R']
+    @selected_ratings = params[:ratings].keys if params[:ratings].present?
 
     if @selected_ratings.nil?
       @selected_ratings = @all_ratings
     end
 
-
     @movies = Movie.with_ratings(@selected_ratings)
- 
+    @ratings_to_show = @all_ratings.each_with_object({}) { |rating, hash| hash[rating] = 1 }
+
   end
 
   def new
