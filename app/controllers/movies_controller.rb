@@ -8,26 +8,42 @@ class MoviesController < ApplicationController
 
 
   def index
-    if not params.has_key?(:home)
-      if params.has_key?(:check)
-        session[:ratings]=params[:ratings]
-      end
-    end
-    if params[:sort_key]!=nil
-      session[:sort_key]=params[:sort_key]
-    end
-    @sort_column=session[:sort_key]
+
+    session[:ratings] = params[:ratings] if params[:check].present? && !params.has_key?(:home)
+    session[:sort_key] = params[:sort_key] if params[:sort_key].present?
+  
+    @sort_column = session[:sort_key]
     @all_ratings = Movie.all_ratings
-    if session[:ratings]==nil
-      @ratings_to_show=@all_ratings
-    else
-      @ratings_to_show = session[:ratings].keys
-    end
-    if session[:sort_key]!=params[:sort_key] or session[:ratings]!=params[:ratings]
+    @ratings_to_show = session[:ratings].nil? ? @all_ratings : session[:ratings].keys
+  
+    if session[:sort_key] != params[:sort_key] || session[:ratings] != params[:ratings]
       redirect_to movies_path(sort_key: session[:sort_key], ratings: session[:ratings])
-      return
+    else
+      @movies = Movie.with_ratings(@ratings_to_show, @sort_column)
     end
-    @movies = Movie.with_ratings(@ratings_to_show,@sort_column)
+  
+    # if not params.has_key?(:home)
+    #   if params.has_key?(:check)
+    #     session[:ratings]=params[:ratings]
+    #   end
+    # end
+    # if params[:sort_key]!=nil
+    #   session[:sort_key]=params[:sort_key]
+    # end
+
+
+    # @sort_column=session[:sort_key]
+    # @all_ratings = Movie.all_ratings
+    # if session[:ratings]==nil
+    #   @ratings_to_show=@all_ratings
+    # else
+    #   @ratings_to_show = session[:ratings].keys
+    # end
+    # if session[:sort_key]!=params[:sort_key] or session[:ratings]!=params[:ratings]
+    #   redirect_to movies_path(sort_key: session[:sort_key], ratings: session[:ratings])
+    #   return
+    # end
+    # @movies = Movie.with_ratings(@ratings_to_show,@sort_column)
   end
     
 
