@@ -8,54 +8,27 @@ class MoviesController < ApplicationController
 
 
   def index
-    puts '\n\nPRINTING PARAMS'
-    puts params
-    if not params[:ratings]
-      if session[:ratings]
-        params[:ratings] = session[:ratings]
+    if not params.has_key?(:home)
+      if params.has_key?(:check)
+        session[:ratings]=params[:ratings]
       end
     end
-
-    if not params[:sort]
-      if session[:sort]
-        params[:sort] = session[:sort]
-      end
+    if params[:sort_key]!=nil
+      session[:sort_key]=params[:sort_key]
     end
-
+    @sort_column=session[:sort_key]
     @all_ratings = Movie.all_ratings
-    @ratings_to_show = []
-    if params[:ratings]
-      params[:ratings].each do |key, array|
-        @ratings_to_show << key
-      end
-
-      session[:ratings] = params[:ratings]
-    end
-
-    #get movies
-    if @ratings_to_show == []
-      @movies = Movie.with_ratings(@all_ratings)
+    if session[:ratings]==nil
+      @ratings_to_show=@all_ratings
     else
-      @movies = Movie.with_ratings(@ratings_to_show)
+      @ratings_to_show = session[:ratings].keys
     end
-
-    @title_color = ''
-    @release_color = ''
-    if params[:sort]
-      @movies = @movies.order(params[:sort])
-      if params[:sort] == 'title'
-        @title_color = 'hilite'
-      elsif params[:sort] == 'release_date'
-        @release_color = 'hilite'
-      end
-
-      session[:sort] = params[:sort]
+    if session[:sort_key]!=params[:sort_key] or session[:ratings]!=params[:ratings]
+      redirect_to movies_path(sort_key: session[:sort_key], ratings: session[:ratings])
+      return
     end
-
-    
-    # @movies = Movie.all
+    @movies = Movie.with_ratings(@ratings_to_show,@sort_column)
   end
-
     
 
 

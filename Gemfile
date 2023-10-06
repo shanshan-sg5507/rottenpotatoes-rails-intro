@@ -28,7 +28,6 @@ group :development, :test do
 
   gem 'rspec-rails'
   gem 'guard-rspec'
-  gem 'rerun'
 
   # Use sqlite3 as the database for Active Record
   gem 'sqlite3', '~> 1.3.6'
