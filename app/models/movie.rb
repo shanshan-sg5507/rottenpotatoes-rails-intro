@@ -10,31 +10,11 @@ class Movie < ActiveRecord::Base
   # end
 
   def self.all_ratings
-    result = []
-    extract = Movie.select(:rating).distinct
-    extract.each do |m|
-      result << m.rating
-    end
-    return result
+    self.uniq.pluck(:rating)
   end
 
-  def self.with_ratings(ratings, sort_by)
-    if ratings == nil or ratings.empty? 
-      if sort_by
-        return Movie.order(sort_by)
-      else
-        return Movie.all
-      end
-      
-    else
-      ratings = ratings.keys.map(&:upcase)
-      if sort_by
-        return Movie.where(rating: ratings).order(sort_by)
-      else
-        return Movie.where(rating: ratings)
-      end 
-      
-    end
+  def self.with_ratings(ratings)
+    self.where(rating: ratings)
   end
-
+  
 end

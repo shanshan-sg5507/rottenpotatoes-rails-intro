@@ -4,6 +4,7 @@
 <%#  Part 1: Start here... %>
 
 <%= form_tag movies_path, method: :get, id: 'ratings_form' do %>
+<%= hidden_field_tag :sort, params[:sort] %>
   Include:
   <% @all_ratings.each do |rating| %>
     <div class="form-check  form-check-inline">
@@ -18,9 +19,9 @@
 <table class="table table-striped col-md-12" id="movies">
   <thead>
     <tr>
-      <th><%= link_to "Movie Title", movies_path(sort: "title", ratings: Hash[@ratings_to_show.zip([1] * @ratings_to_show.length)]), id: 'title_header', class: ("hilite bg-warning" if @sort_by == 'title') %></th>
+      <th class="<%= @title_color %>"><%= link_to "Movie Title", :sort => "title", :ratings => @ratings_to_show.each_with_object({}) { |k, h| h[k] = 1 }%></th>
       <th>Rating</th>
-      <th><%= link_to "Release Date", movies_path(sort: "release_date", ratings: Hash[@ratings_to_show.zip([1] * @ratings_to_show.length)]), id: 'release_date_header', class: ("hilite bg-warning" if @sort_by == 'release_date') %></th>
+      <th class="<%= @release_color %>"><%= link_to "Release Date", :sort => "release_date", :ratings => @ratings_to_show.each_with_object({}) { |k, h| h[k] = 1 }%></th>
       <th>More Info</th>
     </tr>
   </thead>
