@@ -1,11 +1,12 @@
 class Movie < ActiveRecord::Base
 
 
-  def self.with_ratings(ratings_list)
-    if ratings_list.nil? || ratings_list.empty?
-      all
-    else
-      where(rating: ratings_list)
-    end
+  def self.all_ratings
+    return ['G', 'PG', 'PG-13', 'R']
   end
+
+  def self.with_ratings(ratings_list, sort_by)
+    Movie.where(:rating => ratings_list).order(sort_by)
+  end
+
 end

@@ -7,16 +7,48 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @all_ratings =  ['G', 'PG', 'PG-13', 'R']
-    @selected_ratings = params[:ratings].keys if params[:ratings].present?
+    
+    ratings = params[:ratings]
+    @all_ratings = Movie.all_ratings
+    
+    session.clear if request.referer.nil?
 
-    if @selected_ratings.nil?
-      @selected_ratings = @all_ratings
+
+    session[:ratings] = ratings if params[:ratings]
+    session[:sort] = params[:sort] if params[:sort]
+
+    sort_by = params[:sort]
+
+    if params[:ratings].nil? && params[:commit]=="Refresh"
+      @ratings_to_show = Movie.all_ratings
+      @movies = Movie.with_ratings(@ratings_to_show, session[:sort])
+      session[:ratings] = params[:rating]
+
+    elsif (params[:ratings].nil? && !session[:ratings].nil?) || (params[:sort].nil? && !session[:sort].nil?)
+      redirect_to movies_path("ratings" => session[:ratings], "sort" => session[:sort])
+    
+    else
+      ratings = params[:ratings].present? ? params[:ratings].keys : @all_ratings
+
+      if sort_by == 'title'
+        @sort_by = sort_by
+        @highlight = 'title'
+      elsif sort_by=='release_date'
+        @sort_by = sort_by
+        @highlight = 'release_date'
+      else
+        @sort_by = ""
+        @ratings_to_show = ratings
+        @highlight = nil
+      end
+      
+      @ratings_to_show = ratings
+      @movies = Movie.with_ratings(@ratings_to_show, @sort_by)
+    
+      
     end
-
-    @movies = Movie.with_ratings(@selected_ratings)
-    @ratings_to_show = @all_ratings.each_with_object({}) { |rating, hash| hash[rating] = 1 }
-
+    
+    
   end
 
   def new
