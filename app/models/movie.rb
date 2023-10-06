@@ -47,12 +47,8 @@ class Movie < ActiveRecord::Base
   def self.with_ratings(ratings_list, sort_key)
     ratings_list = ratings_list&.map(&:upcase)
 
-    movies = if ratings_list.blank?
-               all
-             else
-               where(rating: ratings_list)
-             end
-
+    movies = ratings_list.blank? ? all : where(rating: ratings_list)
+    
     movies = movies.order(sort_key) if sort_key.present?
     movies
   end
