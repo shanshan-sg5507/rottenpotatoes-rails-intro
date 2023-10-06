@@ -5,8 +5,13 @@ class Movie < ActiveRecord::Base
     return ['G', 'PG', 'PG-13', 'R']
   end
 
+  # def self.with_ratings(ratings_list, sort_by)
+  #   Movie.where(:rating => ratings_list).order(sort_by)
+  # end
+
   def self.with_ratings(ratings_list, sort_by)
-    Movie.where(:rating => ratings_list).order(sort_by)
+    movies = Movie.where(:rating => ratings_list).order(sort_by)
+    return movies 
   end
 
 end

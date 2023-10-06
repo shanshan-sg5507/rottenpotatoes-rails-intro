@@ -6,30 +6,84 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
-  def index
+  # def index
     
+  #   ratings = params[:ratings]
+  #   @all_ratings = Movie.all_ratings
+    
+  #   session.clear if request.referer.nil?
+
+
+  #   session[:ratings] = ratings if params[:ratings]
+  #   session[:sort] = params[:sort] if params[:sort]
+
+  #   sort_by = params[:sort]
+
+  #   if params[:ratings].nil? && params[:commit]=="Refresh"
+  #     @ratings_to_show = Movie.all_ratings
+  #     @movies = Movie.with_ratings(@ratings_to_show, session[:sort])
+  #     session[:ratings] = params[:rating]
+
+  #   elsif (params[:ratings].nil? && !session[:ratings].nil?) || (params[:sort].nil? && !session[:sort].nil?)
+  #     redirect_to movies_path("ratings" => session[:ratings], "sort" => session[:sort])
+    
+  #   else
+  #     ratings = params[:ratings].present? ? params[:ratings].keys : @all_ratings
+
+  #     if sort_by == 'title'
+  #       @sort_by = sort_by
+  #       @highlight = 'title'
+  #     elsif sort_by=='release_date'
+  #       @sort_by = sort_by
+  #       @highlight = 'release_date'
+  #     else
+  #       @sort_by = ""
+  #       @ratings_to_show = ratings
+  #       @highlight = nil
+  #     end
+      
+  #     @ratings_to_show = ratings
+  #     @movies = Movie.with_ratings(@ratings_to_show, @sort_by)
+    
+      
+  #   end
+    
+    
+  # end
+
+  def index
     ratings = params[:ratings]
     @all_ratings = Movie.all_ratings
     
-    session.clear if request.referer.nil?
+    if (request.referrer).nil?
+      session.clear
+    end
 
-
-    session[:ratings] = ratings if params[:ratings]
-    session[:sort] = params[:sort] if params[:sort]
+    #Store current rating and sort parameters in session to be remembered
+    if !params[:ratings].nil?
+      session[:ratings] = ratings 
+    end
+    
+    if !params[:sort].nil?
+      session[:sort] = params[:sort]
+    end
 
     sort_by = params[:sort]
-
-    if params[:ratings].nil? && params[:commit]=="Refresh"
+    #When all boxes are unchecked we want to display as all ratings are checked
+    if (params[:ratings].nil? and params[:commit]=="Refresh")
       @ratings_to_show = Movie.all_ratings
       @movies = Movie.with_ratings(@ratings_to_show, session[:sort])
       session[:ratings] = params[:rating]
-
+    #When returning from another pager it should remember the ratings/sort 
     elsif (params[:ratings].nil? && !session[:ratings].nil?) || (params[:sort].nil? && !session[:sort].nil?)
       redirect_to movies_path("ratings" => session[:ratings], "sort" => session[:sort])
     
     else
-      ratings = params[:ratings].present? ? params[:ratings].keys : @all_ratings
-
+      if !params[:ratings].nil?
+        ratings = params[:ratings].keys
+      else
+        ratings = @all_ratings
+      end
       if sort_by == 'title'
         @sort_by = sort_by
         @highlight = 'title'
@@ -50,6 +104,7 @@ class MoviesController < ApplicationController
     
     
   end
+
 
   def new
     # default: render 'new' template
